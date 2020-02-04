@@ -49,7 +49,9 @@ function Auth(config) {
         console.log('Copy/paste this OAuth URL in your browser to authenticate:\n', url);
         if(config.onOauthUrlCreated){
             //if a callback is defined, call it and pass the url through
-            config.onOauthUrlCreated(url);
+            config.onOauthUrlCreated(url, (oauthCode) => {
+                processTokens(oAuthToken);
+            });
         }
     } else {
         // open the URL by default
@@ -57,23 +59,23 @@ function Auth(config) {
         open(url).catch(() => {
           console.log('Failed to automatically open the URL. Copy/paste this in your browser:\n', url);
         });
+
+        // if tokenInput is configured
+        // run the tokenInput function to accept the token code
+        if (typeof config.tokenInput === 'function') {
+          config.tokenInput(processTokens);
+          return;
+        }
+
+        // create the interface to accept the code
+        const reader = readline.createInterface({
+          input: process.stdin,
+          output: process.stdout,
+          terminal: false,
+        });
+
+        reader.question('Paste your code: ', processTokens);
     }
-
-    // if tokenInput is configured
-    // run the tokenInput function to accept the token code
-    if (typeof config.tokenInput === 'function') {
-      config.tokenInput(processTokens);
-      return;
-    }
-
-    // create the interface to accept the code
-    const reader = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
-      terminal: false,
-    });
-
-    reader.question('Paste your code: ', processTokens);
   };
 
   const processTokens = (oauthCode) => {
