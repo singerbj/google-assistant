@@ -44,11 +44,20 @@ function Auth(config) {
       scope: ['https://www.googleapis.com/auth/assistant-sdk-prototype'],
     });
 
-    // open the URL
-    console.log('Opening OAuth URL. Return here with your code.');
-    open(url).catch(() => {
-      console.log('Failed to automatically open the URL. Copy/paste this in your browser:\n', url);
-    });
+    if(config.openOauthUrl === false){
+        // dont open the URL if openOauthUrl config setting is false
+        console.log('Copy/paste this OAuth URL in your browser to authenticate:\n', url);
+        if(config.onOauthUrlCreated){
+            //if a callback is defined, call it and pass the url through
+            config.onOauthUrlCreated(url);
+        }
+    } else {
+        // open the URL by default
+        console.log('Opening OAuth URL. Return here with your code.');
+        open(url).catch(() => {
+          console.log('Failed to automatically open the URL. Copy/paste this in your browser:\n', url);
+        });
+    }
 
     // if tokenInput is configured
     // run the tokenInput function to accept the token code
