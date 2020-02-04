@@ -50,7 +50,7 @@ function Auth(config) {
         if(config.onOauthUrlCreated){
             //if a callback is defined, call it and pass the url through
             config.onOauthUrlCreated(url, (oauthCode) => {
-                processTokens(oAuthToken);
+                processTokens(oauthCode);
             });
         }
     } else {
